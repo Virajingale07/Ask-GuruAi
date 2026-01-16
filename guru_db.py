@@ -1,28 +1,44 @@
 import streamlit as st
 from supabase import create_client, Client
 
+
 # --- CONNECTION MANAGER ---
 @st.cache_resource
 def get_supabase_client() -> Client:
-    """Establishes a connection to Supabase using secrets."""
+    """
+    Establishes a connection to Supabase using secrets.
+    Includes validation to catch httpx.ConnectError triggers early.
+    """
     try:
-        url = st.secrets["SUPABASE_URL"]
-        key = st.secrets["SUPABASE_KEY"]
+        # 1. Fetch credentials from Streamlit Secrets
+        url = st.secrets.get("SUPABASE_URL")
+        key = st.secrets.get("SUPABASE_KEY")
+
+        # 2. Validate URL presence and format to prevent connection failures
+        if not url or not key:
+            st.error("🔑 Missing Supabase credentials in Streamlit Secrets.")
+            st.stop()
+
+        if not url.startswith("https://"):
+            st.error("🌐 Invalid SUPABASE_URL format. It must start with 'https://'.")
+            st.stop()
+
+        # 3. Initialize client
         return create_client(url, key)
     except Exception as e:
-        st.error(f"Missing Database Secrets: {e}")
+        st.error(f"❌ Database Connection Failed: {e}")
+        st.info("Check if your Supabase project is paused or if the URL is copied correctly.")
         st.stop()
 
 
 def init_db():
-    """Verifies database connection on startup."""
+    """Verifies database connection and table existence on startup."""
     try:
         client = get_supabase_client()
-        # Lightweight check to ensure table exists and we can connect
+        # Verify 'chat_history' table is accessible
         client.table("chat_history").select("id", count="exact").limit(1).execute()
     except Exception as e:
-        # Don't stop app, just log (tables might be empty)
-        print(f"DB Check Warning: {e}")
+        st.warning(f"⚠️ Database Table Warning: {e}. Ensure tables 'users' and 'chat_history' exist.")
 
 
 # --- CHAT HISTORY FUNCTIONS ---
@@ -63,14 +79,12 @@ def get_all_sessions():
     client = get_supabase_client()
     username = st.session_state.get("username", "guest")
 
-    # Only fetch sessions belonging to this user
     response = client.table("chat_history") \
         .select("session_id") \
         .eq("username", username) \
         .order("created_at", desc=True) \
         .execute()
 
-    # Deduplicate session IDs manually
     unique_sessions = []
     seen = set()
     for row in response.data:
@@ -82,7 +96,7 @@ def get_all_sessions():
     return unique_sessions
 
 
-# --- [NEW] USER PLAN MANAGEMENT ---
+# --- USER PLAN MANAGEMENT ---
 
 def get_user_plan(username):
     """Fetches the user's plan type (free/pro). Defaults to free."""
@@ -97,19 +111,18 @@ def get_user_plan(username):
 
 
 def update_user_plan(username, new_plan):
-    """Updates the user's plan (e.g., after payment)."""
+    """Updates the user's plan in the 'users' table."""
     client = get_supabase_client()
     client.table("users").update({"plan_type": new_plan}).eq("username", username).execute()
 
-# ----------------------------------
-
 
 # --- SETTINGS MANAGEMENT ---
-# (Falling back to Session State for simplicity to avoid needing another SQL table)
 
 def save_setting(key, value):
+    """Saves app settings to the session state."""
     st.session_state[f"setting_{key}"] = value
 
 
 def load_setting(key, default):
+    """Loads app settings from the session state."""
     return st.session_state.get(f"setting_{key}", default)
