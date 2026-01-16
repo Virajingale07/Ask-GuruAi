@@ -53,14 +53,37 @@ with st.sidebar:
     st.write(f"👤 **User:** {current_user}")
     st.caption(get_key_status())
 
-    # REMOVED: Plan Status Indicator and Upgrade Button
-
+    # --- POSITION 1: LOGOUT ---
     if st.button("🔒 Logout", use_container_width=True):
         logout()
 
     st.divider()
 
-    # --- DATA CENTER ---
+    # --- POSITION 2: SESSION HISTORY ---
+    st.markdown("### 🕒 Session History")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("➕ New", use_container_width=True):
+            st.session_state.current_session_id = f"{current_user}-Session-{uuid.uuid4().hex[:4]}"
+            st.rerun()
+    with col2:
+        if st.button("🗑️ Clear", use_container_width=True):
+            clear_session(current_sess)
+            st.rerun()
+
+    # List recent sessions
+    st.caption("Recent Sessions:")
+    my_sessions = [s for s in get_all_sessions() if s.startswith(f"{current_user}-")]
+
+    for s in my_sessions[:5]:
+        display_name = s.replace(f"{current_user}-", "")
+        if st.button(f"📂 {display_name}", key=s, use_container_width=True):
+            st.session_state.current_session_id = s
+            st.rerun()
+
+    st.divider()
+
+    # --- POSITION 3: DATA CENTER ---
     st.markdown("### 📂 Data Center")
 
     # SIMPLIFIED: All users get all file types
@@ -87,7 +110,7 @@ with st.sidebar:
 
     st.divider()
 
-    # --- 3. REPORTING ---
+    # --- POSITION 4: REPORTING ---
     st.markdown("### 📄 Reporting")
     if st.button("📥 Export PDF Report", use_container_width=True):
         with st.spinner("Compiling PDF..."):
@@ -95,29 +118,6 @@ with st.sidebar:
             pdf_file = generate_pdf(history, current_sess)
         with open(pdf_file, "rb") as f:
             st.download_button("⬇️ Download PDF", f, file_name=pdf_file, use_container_width=True)
-
-    st.divider()
-
-    st.markdown("### 🕒 Session History")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("➕ New", use_container_width=True):
-            st.session_state.current_session_id = f"{current_user}-Session-{uuid.uuid4().hex[:4]}"
-            st.rerun()
-    with col2:
-        if st.button("🗑️ Clear", use_container_width=True):
-            clear_session(current_sess)
-            st.rerun()
-
-    # List recent sessions
-    st.caption("Recent Sessions:")
-    my_sessions = [s for s in get_all_sessions() if s.startswith(f"{current_user}-")]
-
-    for s in my_sessions[:5]:
-        display_name = s.replace(f"{current_user}-", "")
-        if st.button(f"📂 {display_name}", key=s, use_container_width=True):
-            st.session_state.current_session_id = s
-            st.rerun()
 
 # --- CHAT INTERFACE ---
 st.title("GuruAi Intelligent Analytics")
