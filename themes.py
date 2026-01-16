@@ -15,87 +15,76 @@ THEMES = {
 
 
 def inject_theme_css(theme_name):
-    """Injects professional CSS styles into the app."""
+    """Injects professional Ask-GuruAi CSS styles into the app."""
     theme = THEMES.get(theme_name, THEMES["GuruAi Enterprise"])
 
     css = f"""
     <style>
-        /* 1. MAIN CONTAINER & FONT */
+        /* 1. GLOBAL STYLES */
         .stApp {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: {theme['text']};
+            background-color: {theme['background']};
+            font-family: 'Inter', -apple-system, sans-serif;
         }}
 
-        /* 2. SIDEBAR STYLING */
+        /* 2. PREMIUM GRADIENT BUTTONS */
+        div.stButton > button {{
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white !important;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 14px;
+        }}
+
+        div.stButton > button:hover {{
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            border: none;
+        }}
+
+        /* 3. DANGER BUTTON (Logout/Clear) */
+        /* Targets buttons that should look like 'Danger' actions */
+        div.stButton > button:contains("Logout"), 
+        div.stButton > button:contains("Clear"),
+        div.stButton > button:contains("🗑️") {{
+            background: #1F2937;
+            border: 1px solid #374151;
+        }}
+
+        div.stButton > button:contains("Logout"):hover {{
+            background: #EF4444 !important;
+            border: none;
+        }}
+
+        /* 4. SIDEBAR REFINEMENT */
         [data-testid="stSidebar"] {{
             background-color: {theme['sidebar']};
             border-right: 1px solid #30363D;
         }}
 
-        [data-testid="stSidebar"] h1 {{
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            letter-spacing: -0.5px;
-            margin-bottom: 1rem;
-        }}
-
-        [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{
-            color: #8B949E; /* Muted text for sidebar labels */
-            font-size: 0.85rem;
-            font-weight: 500;
-        }}
-
-        /* 3. BUTTONS (SaaS Style) */
-        .stButton button {{
-            background-color: {theme['primary']};
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }}
-
-        .stButton button:hover {{
-            background-color: #2563EB; /* Slightly darker blue on hover */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transform: translateY(-1px);
-        }}
-
-        /* Secondary/Outline Buttons (if any) */
-        div[data-testid="stForm"] .stButton button {{
-             width: 100%;
-        }}
-
-        /* 4. CHAT MESSAGE STYLING */
-        /* User Message Bubble */
-        [data-testid="stChatMessage"]:nth-child(odd) {{
+        [data-testid="stSidebarNav"] {{
             background-color: transparent;
         }}
 
-        /* AI Message Bubble (Subtle highlight) */
-        [data-testid="stChatMessage"]:nth-child(even) {{
+        /* 5. DATA CENTER CARDS */
+        .stAlert {{
             background-color: #161B22;
             border: 1px solid #30363D;
-            border-radius: 8px;
-            padding: 1rem;
+            border-radius: 10px;
         }}
 
-        /* 5. METRIC CARDS & HEADERS */
-        h1, h2, h3 {{
-            color: #FFFFFF;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        /* 6. CHAT INPUT FOCUS */
+        .stChatInputContainer textarea {{
+            border: 1px solid #30363D !important;
+            focus-border-color: #3B82F6 !important;
         }}
-
-        /* 6. STATUS CONTAINERS (Success, Error, Info) */
-        .stAlert {{
-            border-radius: 6px;
-            border: 1px solid #30363D;
-        }}
-
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
