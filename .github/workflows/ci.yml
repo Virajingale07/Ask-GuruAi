@@ -1,4 +1,4 @@
-name: Nexus AI CI
+name: GuruAi AI CI
 
 on:
   push:
