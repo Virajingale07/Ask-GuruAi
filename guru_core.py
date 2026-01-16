@@ -53,46 +53,30 @@ current_theme = load_setting("theme", "GuruAi Enterprise")
 inject_theme_css(current_theme)
 theme_data = THEMES.get(current_theme, THEMES["GuruAi Enterprise"])
 
+# --- SIDEBAR ---
 with st.sidebar:
-    st.title("⚡ NEXUS HQ")
+    st.title("⚡ GURU HQ")
     st.write(f"👤 **User:** {current_user}")
-
-    # [NEW] Plan Status Indicator
-    if user_plan == "pro":
-        st.success("🌟 Pro Plan Active")
-    else:
-        st.info("📦 Free Plan")
-        if st.button("🚀 Upgrade to Pro", use_container_width=True):
-            st.markdown("[Click here to Upgrade](https://your-stripe-link.com)")
-
     st.caption(get_key_status())
+
+    # REMOVED: Plan Status Indicator and Upgrade Button
 
     if st.button("🔒 Logout", use_container_width=True):
         logout()
 
     st.divider()
 
-    # --- 2. DATA CENTER ---
+    # --- DATA CENTER ---
     st.markdown("### 📂 Data Center")
 
-    # [NEW] Conditional File Uploader
-    allowed_types = ['csv', 'xlsx', 'xls', 'json']
-    file_help_text = "Supported: CSV, Excel, JSON"
+    # SIMPLIFIED: All users get all file types
+    allowed_types = ['csv', 'xlsx', 'xls', 'json', 'pdf', 'docx']
+    uploaded_file = st.file_uploader("Upload Dataset", type=allowed_types)
 
-    if user_plan == "pro":
-        allowed_types.extend(['pdf', 'docx'])
-        file_help_text += ", PDF, DOCX (Pro)"
-
-    uploaded_file = st.file_uploader("Upload Dataset", type=allowed_types, help=file_help_text)
-
-    # [NEW] Google Sheet Input (Pro Only)
-    if user_plan == "pro":
-        gsheet_url = st.text_input("🔗 Google Sheet URL", placeholder="Paste 'Anyone with link' URL")
-        if gsheet_url and st.button("Load Sheet"):
-            # Placeholder for Sheet Logic (will implement in Engine next)
-            st.info(f"Loading Sheet: {gsheet_url}...")
-    else:
-        st.text_input("🔗 Google Sheet URL", placeholder="🔒 Upgrade to Pro to use", disabled=True)
+    # SIMPLIFIED: Google Sheet enabled for everyone
+    gsheet_url = st.text_input("🔗 Google Sheet URL")
+    if gsheet_url and st.button("Load Sheet"):
+        st.info(f"Loading Sheet: {gsheet_url}...")
 
     if uploaded_file:
         status = engine.load_file(uploaded_file)
@@ -142,7 +126,7 @@ with st.sidebar:
             st.rerun()
 
 # --- CHAT INTERFACE ---
-st.title("Nexus Intelligent Analytics")
+st.title("GuruAi Intelligent Analytics")
 
 # Load History
 history = load_history(current_sess)
@@ -164,29 +148,11 @@ if prompt:
     if engine.df is not None and not engine.column_str:
         engine.column_str = ", ".join(list(engine.df.columns))
 
-    # 3. Construct System Prompt
-    system_text = "You are Nexus, an advanced data analysis AI. You have access to a Python environment."
-    has_data = "df" in engine.scope
+    # 3. Construct System Prompt (Simplified)
+    system_text = "You are GuruAi, a professional data analyst. Use 'python_analysis' for data tasks."
 
-    if has_data:
-        system_text += f"""
-        [DATA MODE ACTIVE]
-        1. Variable 'df' is loaded.
-        2. VALID COLUMNS: [{engine.column_str}]
-        3. RULES:
-           - Plan your step before writing code.
-           - Use 'python_analysis' for all data queries.
-           - When plotting, ALWAYS ensure the figure is created.
-        """
-    else:
-        system_text += """
-        [SANDBOX MODE ACTIVE]
-        1. No file loaded.
-        2. You can still use 'python_analysis' to:
-           - Generate synthetic data.
-           - Perform math calculations.
-        3. If asked for real-world facts/news, use 'tavily'.
-        """
+    if engine.df is not None:
+        system_text += f"\n[DATA ACTIVE] Columns: {engine.column_str}. ALWAYS use print() to show table outputs."
 
     # 4. Context Window
     recent_history = history[-2:]

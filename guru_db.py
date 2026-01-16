@@ -96,26 +96,6 @@ def get_all_sessions():
     return unique_sessions
 
 
-# --- USER PLAN MANAGEMENT ---
-
-def get_user_plan(username):
-    """Fetches the user's plan type (free/pro). Defaults to free."""
-    client = get_supabase_client()
-    try:
-        response = client.table("users").select("plan_type").eq("username", username).execute()
-        if response.data:
-            return response.data[0].get("plan_type", "free")
-        return "free"
-    except Exception:
-        return "free"
-
-
-def update_user_plan(username, new_plan):
-    """Updates the user's plan in the 'users' table."""
-    client = get_supabase_client()
-    client.table("users").update({"plan_type": new_plan}).eq("username", username).execute()
-
-
 # --- SETTINGS MANAGEMENT ---
 
 def save_setting(key, value):

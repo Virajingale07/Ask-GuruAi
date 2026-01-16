@@ -16,22 +16,17 @@ def verify_password(password, hashed_password):
 
 
 def create_user(username, password):
-    """Registers a new user in Supabase."""
     supabase = get_supabase_client()
-
-    # 1. Check if user already exists
     existing = supabase.table("users").select("username").eq("username", username).execute()
     if existing.data:
         return False, "Username already taken."
 
-    # 2. Create new user
     hashed = hash_password(password)
 
-    # [UPDATED] Include default plan_type
+    # REMOVED: plan_type from the data dictionary
     data = {
         "username": username,
-        "password_hash": hashed,
-        "plan_type": "free"
+        "password_hash": hashed
     }
 
     try:
@@ -39,8 +34,6 @@ def create_user(username, password):
         return True, "Account created! You can now log in."
     except Exception as e:
         return False, f"Error: {str(e)}"
-
-
 def login_user(username, password):
     """Verifies credentials."""
     supabase = get_supabase_client()
