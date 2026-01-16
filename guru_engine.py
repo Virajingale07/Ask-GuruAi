@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from io import StringIO
-from nexus_insights import InsightModule
+from guru_insights import InsightModule
 
 class DataEngine:
     def __init__(self):
