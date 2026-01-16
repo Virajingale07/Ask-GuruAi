@@ -30,11 +30,6 @@ engine = st.session_state.data_engine
 # --- MULTI-USER SESSION MANAGEMENT ---
 current_user = st.session_state.get("username", "guest")
 
-# [NEW] Load User Plan
-if "user_plan" not in st.session_state:
-    st.session_state.user_plan = get_user_plan(current_user)
-user_plan = st.session_state.user_plan
-
 # Prefix session ID with username
 if "current_session_id" not in st.session_state:
     st.session_state.current_session_id = f"{current_user}-Session-{uuid.uuid4().hex[:4]}"
