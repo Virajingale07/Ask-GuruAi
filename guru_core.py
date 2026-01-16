@@ -49,9 +49,9 @@ current_sess = st.session_state.current_session_id
 app = build_agent_graph(engine)
 
 # --- SIDEBAR & THEME ---
-current_theme = load_setting("theme", "Nexus Enterprise")
+current_theme = load_setting("theme", "GuruAi Enterprise")
 inject_theme_css(current_theme)
-theme_data = THEMES.get(current_theme, THEMES["Nexus Enterprise"])
+theme_data = THEMES.get(current_theme, THEMES["GuruAi Enterprise"])
 
 with st.sidebar:
     st.title("⚡ NEXUS HQ")
