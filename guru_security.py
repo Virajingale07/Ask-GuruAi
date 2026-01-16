@@ -1,6 +1,6 @@
 import streamlit as st
 import bcrypt
-from nexus_db import get_supabase_client
+from guru_db import get_supabase_client
 
 
 # --- AUTHENTICATION FUNCTIONS ---
