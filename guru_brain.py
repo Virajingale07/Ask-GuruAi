@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 # --- CONFIGURATION ---
 # We prioritize the 70b model for logic, but fallback to 8b if needed
 MODEL_SMART = "llama-3.3-70b-versatile"
-MODEL_FAST = "llama-3.1-8b-instant"
+MODEL_FAST = "meta-llama/llama-4-maverick-17b-128e-instruct"
 
 # Load Keys
 raw_groq = st.secrets.get("GROQ_API_KEYS", "")
