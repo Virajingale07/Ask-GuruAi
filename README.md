@@ -1,4 +1,4 @@
-# Nexus AI Chat Bot 🤖
+# GuruAI Chat Bot 🤖
 
 A **modular AI-powered chatbot** built with **Streamlit, LangChain, Groq API, and Tavily search integration** — designed to handle conversational queries and perform data-driven analysis interactively.
 
