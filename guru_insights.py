@@ -8,7 +8,7 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 class InsightModule:
     """
-    Advanced Analytics Module for Nexus AI.
+    Advanced Analytics Module for guru AI.
     Features: Anomaly Detection, Forecasting, Smart Correlations.
     """
 

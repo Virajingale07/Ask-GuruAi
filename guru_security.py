@@ -56,7 +56,7 @@ def login_user(username, password):
 
 def login_form():
     """Renders the Login/Signup UI."""
-    st.markdown("## 🔐 Nexus AI Login")
+    st.markdown("## 🔐 Guru AI Login")
 
     tab1, tab2 = st.tabs(["Log In", "Sign Up"])
 
